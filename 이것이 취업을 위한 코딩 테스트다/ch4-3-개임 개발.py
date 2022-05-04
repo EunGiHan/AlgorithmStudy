@@ -1,32 +1,45 @@
 n, m = map(int, input().split(' '))
-a, b, d = map(int, input().split(' '))
-map = []
+d = [[0] * m for _ in range(n)]
+x, y, dir = map(int, input().split())
+d[x][y] = 1 # 가본곳과 가보지 않은 곳 저장
+
+map = []    # 물인 곳과 육지인 곳 저장
 for _ in range(n):
-    row = list(map(int, input().split(' ')))
-    map.append(row)
-print(map)
+    map.append(list(map(int, input().split)))
 
-dir = [[-1, 0], [0, -1], [1, 0], [0, 1]]
-heading = d
+# 북 - 동 - 남 - 서
+dx = [-1, 0, 1, 0]
+dy = [0, 1, 0, -1]
+
 cnt = 1
-
+turn = 0
 while True:
-    for i in range(4):
-        cx = a + dir[(heading - i) % 4][0]
-        cy = b + dir[(heading - i) % 4][1]
-        if map[cx, cy] == 0:
-            cnt += 1
-            map[cx, cy] = 2 # 가본 칸
-            a, b = cx, cy
-            heading = (heading - i + 1) % 4
-            break
+    # 왼쪽 회전
+    dir -= 1
+    if dir == -1:
+        dir = 3
+    
+    nx = x + dx[dir]
+    ny = y + dy[dir]
+
+    if d[nx][ny] == 0 and map[nx][ny] == 0:
+        d[nx][ny] = 1
+        x = nx
+        y = ny
+        cnt += 1
+        turn = 0
+        continue
+    else:
+        turn += 1
+    
+    if turn == 4:   # 네 방향 모두 갈 수 없음
+        nx = x - dx[dir]
+        ny = y - dy[dir]
+        if map[nx][ny] == 0:
+            x = nx
+            y = ny
         else:
-            continue
-    if i == 3:
-        cx = a + dir[(heading + 2) % 4][0]
-        cy = b + dir[(heading + 2) % 4][1]
-        if map[cx, cy] == 1:
             break
-        else:
-            map[cx, cy] = 2
-            a, b = cx, cy
+        turn = 0
+
+print(cnt)
